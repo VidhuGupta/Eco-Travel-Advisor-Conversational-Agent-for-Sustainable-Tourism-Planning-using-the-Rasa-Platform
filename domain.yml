@@ -1,0 +1,343 @@
+version: "3.1"
+
+intents:
+
+  - session_greeting
+  - session_closing
+  - capability_overview
+
+  - start_consultation
+
+  - provide_destination
+  - select_destination
+
+  - provide_travel_dates
+
+  - provide_budget
+
+  - provide_sustainability
+
+  - provide_transport_preference
+
+  - provide_accommodation_preference
+
+  - generate_recommendations
+
+  - modify_trip
+
+  - change_destination
+  - change_dates
+  - change_budget
+  - change_sustainability
+  - change_transport
+  - change_accommodation
+
+  - compare_options
+
+  - request_specialist
+
+  - confirm_positive
+  - confirm_negative
+
+  - unsupported_topic
+
+entities:
+
+  - destination
+  - origin
+
+  - travel_start
+  - travel_end
+
+  - budget
+  - currency
+
+  - sustainability_level
+
+  - transport_preference
+  - accommodation_preference
+
+slots:
+
+  destination:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  origin:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  travel_start:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  travel_end:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  budget:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  currency:
+    type: text
+    influence_conversation: true
+    initial_value: EUR
+    mappings:
+      - type: custom
+
+  carbon_estimate_preference:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  sustainability_level:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  transport_preference:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  accommodation_preference:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: custom
+
+  confusion_count:
+    type: float
+    influence_conversation: false
+    initial_value: 0
+    mappings:
+      - type: custom
+
+  awaiting_handover_confirm:
+    type: bool
+    influence_conversation: true
+    initial_value: false
+    mappings:
+      - type: custom
+
+  awaiting_recap_confirm:
+    type: bool
+    influence_conversation: true
+    initial_value: false
+    mappings:
+      - type: custom
+
+  pending_date_phrase:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  route_distance_km:
+    type: float
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  carbon_results:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  recommendation_results:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  handover_context:
+    type: any
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+  handover_reason:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: custom
+
+forms:
+  consultation_form:
+    required_slots:
+      - destination
+      - origin
+      - travel_start
+      - travel_end
+      - budget
+      - sustainability_level
+      - transport_preference
+      - accommodation_preference
+      - carbon_estimate_preference
+
+responses:
+
+  utter_session_greeting:
+    - text: >
+        Welcome to Eco-Travel Advisor AI.
+        I can help you plan your sustainable trip.
+
+  utter_session_closing:
+    - text: >
+        Thank you for using Eco-Travel Advisor AI.
+        Have a great consultation!
+
+  utter_capability_overview:
+    - text: >
+        I can help you choose your destination, dates, budget and preferences,
+        compare flights and accommodation, calculate carbon impact,
+        rank sustainable options and prepare recommendations.
+
+  utter_ask_destination:
+    - text: "Where would you like to go?"
+
+  utter_ask_origin:
+    - text: "Where will you be travelling from? You can enter a city or use your current location."
+
+  utter_ask_travel_start:
+    - text: "What are your preferred dates? You can choose a date range or keep them flexible."
+
+  utter_ask_travel_end:
+    - text: "What date would you like to return?"
+
+  utter_ask_budget:
+    - text: "What’s your comfortable travel budget in {currency}?"
+
+  utter_ask_sustainability_level:
+    - text: "How much would you like to prioritize sustainability?"
+
+  utter_ask_transport_preference:
+    - text: "How would you prefer to travel?"
+
+  utter_ask_accommodation_preference:
+    - text: "What kind of stay feels right for you?"
+
+  utter_ask_carbon_estimate_preference:
+    - text: "Would you like a carbon emissions comparison for your route?"
+
+  utter_api_error:
+    - text: >
+        I couldn't retrieve live information from one of
+        the external services. I will continue with the
+        available information or ask you to try again.
+
+  utter_fallback:
+    - text: "I'm not sure I followed that. Could you rephrase it?"
+    - text: "Sorry, that one didn't land. Try rewording it, or asking in a different way."
+    - text: "I didn't quite catch that. A shorter, more direct phrase usually works best."
+
+  utter_offer_handover:
+    - text: "We seem to be going in circles. Would you like me to bring in a human advisor for this?"
+      buttons:
+        - title: "Yes, get a human advisor"
+          payload: "/confirm_positive"
+        - title: "No, keep going with the bot"
+          payload: "/confirm_negative"
+      custom:
+        awaiting_handover_confirm: true
+
+  utter_confirm_human_handover:
+    - text: "Sure - want me to connect you with a human advisor now? They'll get your full trip context so far."
+      buttons:
+        - title: "Yes, connect me"
+          payload: "/confirm_positive"
+        - title: "No, keep going with the bot"
+          payload: "/confirm_negative"
+      custom:
+        awaiting_handover_confirm: true
+
+  utter_offer_handover_after_results:
+    - text: "Want a human advisor to review these options with you or help finalize anything?"
+      buttons:
+        - title: "Yes, bring in a human advisor"
+          payload: "/confirm_positive"
+        - title: "No, I've got what I need"
+          payload: "/confirm_negative"
+      custom:
+        awaiting_handover_confirm: true
+
+  utter_continue_with_bot:
+    - text: "No problem, let's carry on. Where were we?"
+
+  utter_specialist:
+    - text: >
+        This case requires specialist review.
+        I have prepared the consultation context for handover.
+
+  utter_unsupported_topic:
+    - text: "I'm built specifically for sustainable travel planning, so I can't help with that one."
+    - text: "That's outside what this assistant covers. I only handle travel-advisor trip planning."
+    - text: "I don't have anything useful to say about that; I'm focused on planning sustainable trips."
+
+actions:
+  - validate_consultation_form
+
+  - action_start_consultation
+
+  - action_ask_destination
+
+  - action_ask_travel_start
+
+  - action_ask_budget
+
+  - action_ask_sustainability_level
+
+  - action_reset_field_and_reenter_form
+
+  - action_ask_transport_preference
+
+  - action_ask_accommodation_preference
+
+  - action_get_transportation_options
+
+  - action_get_accommodation_options
+
+  - action_get_activity_options
+
+  - action_calculate_carbon_emissions
+
+  - action_rank_recommendations
+
+  - action_recap_trip_details
+
+  - action_confirm_recap
+
+  - action_compare_options
+
+  - action_modify_trip
+
+  - action_offer_human_handover
+
+  - action_human_handover
+
+  - action_unsupported_topic
+
+  - action_continue_after_handover_offer
+
+  - action_default_fallback
+
+session_config:
+
+  session_expiration_time: 60
+
+  carry_over_slots_to_new_session: true

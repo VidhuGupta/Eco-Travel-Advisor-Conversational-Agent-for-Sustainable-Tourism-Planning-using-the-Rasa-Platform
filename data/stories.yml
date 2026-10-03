@@ -1,0 +1,18 @@
+version: "3.1"
+
+stories:
+
+- story: out of scope question then resumes consultation
+  steps:
+    - intent: start_consultation
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+    - active_loop: null
+    - action: action_recap_trip_details
+
+    - intent: unsupported_topic
+    - action: action_unsupported_topic
+
+    - intent: compare_options
+    - action: action_compare_options

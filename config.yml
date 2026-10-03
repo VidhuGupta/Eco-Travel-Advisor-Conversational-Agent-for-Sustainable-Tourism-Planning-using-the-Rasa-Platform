@@ -1,0 +1,31 @@
+recipe: default.v1
+
+assistant_id: 20260927-024727-moist-crop
+
+language: en
+
+pipeline:
+  - name: SpacyNLP
+    model: "en_core_web_md"
+  - name: SpacyTokenizer
+  - name: SpacyFeaturizer
+  - name: RegexFeaturizer
+  - name: LexicalSyntacticFeaturizer
+  - name: CountVectorsFeaturizer
+  - name: CountVectorsFeaturizer
+    analyzer: char_wb
+    min_ngram: 1
+    max_ngram: 4
+  - name: DIETClassifier
+    epochs: 100
+    constrain_similarities: true
+  - name: EntitySynonymMapper
+  - name: FallbackClassifier
+    threshold: 0.55
+    ambiguity_threshold: 0.1
+
+policies:
+  - name: MemoizationPolicy
+  - name: RulePolicy
+    core_fallback_action_name: action_default_fallback
+    core_fallback_threshold: 0.3

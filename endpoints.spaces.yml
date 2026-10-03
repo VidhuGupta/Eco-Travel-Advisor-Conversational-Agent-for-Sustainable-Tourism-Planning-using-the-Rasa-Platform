@@ -1,0 +1,15 @@
+# Endpoints variant for the combined single-container HuggingFace Spaces
+# image (docker/spaces/Dockerfile). Unlike docker-compose (endpoints.docker.yml,
+# where the action server is a separate container reached by its Compose
+# service name "actions"), here the action server is just another process
+# in the same container, so it's reached over loopback like plain local
+# `rasa run` - the only thing that differs from endpoints.yml is the
+# tracker DB path, kept consistent with the other container variant.
+
+action_endpoint:
+  url: "http://127.0.0.1:5055/webhook"
+
+tracker_store:
+  type: SQL
+  dialect: sqlite
+  db: /app/db/conversation.db

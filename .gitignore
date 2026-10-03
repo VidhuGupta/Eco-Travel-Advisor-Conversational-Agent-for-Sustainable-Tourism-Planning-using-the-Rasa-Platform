@@ -1,0 +1,27 @@
+# Python environments
+/.venv/
+
+# Secrets and Python/Rasa generated files
+/.env
+__pycache__/
+*.py[cod]
+/.rasa/
+docs/
+# Runtime data (Rasa's own tracker store + the admin dashboard's handover
+# sidecar) - all generated at runtime, not source. The db/ folder itself
+# stays tracked (see db/.gitkeep) so a fresh checkout has the directory
+# ready for the app to write into.
+/db/*
+!/db/.gitkeep
+
+# React frontend dependencies and build output
+/frontend/node_modules/
+/frontend/dist/
+
+# Trained models - reproducible via `rasa train`, not source
+/models/
+
+# rasa test/cross-validation output directories - reproducible by re-running
+# the documented test commands (see docs/TESTING_REPORT.md), not source.
+/results/
+/results_*/

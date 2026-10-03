@@ -1,0 +1,471 @@
+version: "3.1"
+
+nlu:
+
+- intent: session_greeting
+  examples: |
+    - good day advisor bot
+    - can we begin
+    - ready to start a consultation
+    - morning, got a new trip to plan
+    - I'm back, let's continue
+    - afternoon, new booking to run through
+    - hi there
+    - hello
+    - hey
+    - hiya, are you around
+    - good morning
+    - good evening
+    - hey there, you around
+    - back again
+
+- intent: session_closing
+  examples: |
+    - that wraps up this consultation
+    - I'm finished for now
+    - close this session
+    - done here, thanks
+    - end the consultation
+    - that's everything for now
+    - we're done here
+    - I'll pick this back up later
+    - goodbye for now
+    - that will be all, thank you
+
+- intent: capability_overview
+  examples: |
+    - what can this bot actually do
+    - walk me through your capabilities
+    - what are you able to help with
+    - give me a rundown of your features
+    - what's in scope for you
+    - what kind of help can you offer
+    - explain what you do
+    - what should I use you for
+    - remind me what you're good for
+    - can you tell me your capabilities
+
+- intent: start_consultation
+  examples: |
+    - start a new consultation
+    - plan a journey
+    - plan a trip
+    - I want to plan a trip for myself
+    - help me plan a sustainable trip
+    - new trip
+    - start a new trip
+    - create a new consultation
+    - I have a new trip to plan
+    - let's start planning
+    - where can i go
+    - where should i go
+    - i want to travel somewhere
+    - i want to go from [Berlin](origin) to [Paris](destination)
+    - i want to do a trip to [London](destination)
+    - trip to [Rome](destination)
+    - we're travelling from [Amsterdam](origin)
+    - book a journey from [Vienna](origin) to [Lisbon](destination)
+    - planning a trip to [Barcelona](destination)
+    - i want to travel from [Copenhagen](origin)
+    - looking to visit [Ljubljana](destination)
+    - can we sort out a trip to [Madrid](destination)
+    - I need a plan for a trip to [Prague](destination)
+    - let's organise a journey from [Dublin](origin) to [Vienna](destination)
+    - I want a trip from [Zurich](origin) to [Milan](destination)
+    - set up a consultation for a trip to [Athens](destination)
+    - I want a getaway to [Krakow](destination)
+    - can you help me book something to [Stockholm](destination)
+
+- intent: provide_destination
+  examples: |
+    - I want to visit [Paris](destination)
+    - I want to go to [Berlin](destination)
+    - destination is [Amsterdam](destination)
+    - [Rome](destination)
+    - I want to travel to [Barcelona](destination)
+    - I'd like [London](destination)
+    - travelling from [Vienna](origin) to [Lisbon](destination)
+    - from [Copenhagen](origin) to [Ljubljana](destination)
+    - departing [Berlin](origin) heading to [Rome](destination)
+    - [Madrid](destination)
+    - [Prague](destination)
+    - [Warsaw](destination)
+    - [Stockholm](destination)
+    - [Athens](destination)
+    - [Krakow](destination)
+    - [Milan](destination)
+    - [Dublin](destination)
+    - [Zurich](destination)
+    - [Munich](destination)
+    - we're headed to [Vienna](destination)
+    - off to [Naples](destination)
+    - flying to [Budapest](destination)
+    - I'd like to go to [Seville](destination)
+    - let's do [Porto](destination)
+    - how about [Nice](destination)
+    - visiting [Florence](destination)
+    - the trip is to [Brussels](destination)
+    - somewhere like [Valencia](destination)
+    - I'm thinking [Edinburgh](destination)
+    - take me to [Reykjavik](destination)
+    - I'd love to check out [Lisbon](destination) sometime
+    - leaving from [Madrid](origin)
+    - we'll depart from [Prague](origin)
+    - starting point is [Warsaw](origin)
+    - [Munich](origin)
+    - coming from [Zurich](origin)
+    - my origin is [Dublin](origin)
+    - flying out of [Stockholm](origin)
+    - based in [Athens](origin)
+    - I live in [Krakow](origin)
+    - we're starting in [Milan](origin)
+    - originating from [Naples](origin)
+    - from [Berlin](origin) to [Vienna](destination)
+    - travelling from [Athens](origin) to [Rome](destination)
+    - heading from [Prague](origin) towards [Madrid](destination)
+    - starting in [Dublin](origin) and ending in [Oslo](destination)
+    - we'll fly from [Munich](origin) into [Barcelona](destination)
+    - from [Zurich](origin), heading to [Lisbon](destination)
+    - going from [Stockholm](origin) to [Krakow](destination)
+    - our trip starts in [Naples](origin) and finishes in [Edinburgh](destination)
+    - we're based in [Warsaw](origin) and want to visit [Nice](destination)
+
+- intent: select_destination
+  examples: |
+    - select [Paris](destination)
+    - choose [Berlin](destination)
+    - select [Amsterdam](destination)
+    - choose [Rome](destination)
+    - let's go with [Vienna](destination)
+    - I'll take [Lisbon](destination)
+    - go with [Prague](destination)
+    - pick [Madrid](destination)
+    - that one, [Budapest](destination)
+    - book [Athens](destination)
+    - I'll go with [Reykjavik](destination)
+    - let's settle on [Naples](destination)
+    - confirmed, [Warsaw](destination) it is
+    - final answer [Krakow](destination)
+    - locking in [Stockholm](destination)
+
+- intent: provide_travel_dates
+  examples: |
+    - from [2026-10-10](travel_start) to [2026-10-15](travel_end)
+    - [2026-10-10](travel_start) until [2026-10-15](travel_end)
+    - travelling from [2026-11-01](travel_start) to [2026-11-07](travel_end)
+    - start date is [2026-10-10](travel_start) and end date is [2026-10-15](travel_end)
+    - [2026-12-01](travel_start) to [2026-12-05](travel_end)
+    - my dates are flexible
+    - no fixed dates yet, keep it flexible
+    - we don't have exact dates, anytime works
+    - dates are open
+    - flexible on when we go
+    - next week
+    - next month
+    - tomorrow
+    - today
+    - in 3 days
+    - in two weeks
+    - in a month
+    - departing [2026-11-15](travel_start)
+    - returning [2026-11-22](travel_end)
+    - we leave [2026-10-20](travel_start)
+    - back by [2026-10-27](travel_end)
+    - heading out next week
+    - sometime next month works
+
+- intent: provide_budget
+  examples: |
+    - the budget is [1200](budget) euros
+    - budget is [800](budget)
+    - I can spend [1500](budget)
+    - around [1000](budget) euros
+    - maximum budget is [2000](budget)
+    - [900](budget) EUR
+    - we have [2000](budget) dollars to spend
+    - keep it under [800](budget)
+    - not more than [1500](budget)
+    - roughly [600](budget) pounds
+    - budget's about [2500](budget)
+    - I can go up to [3000](budget)
+    - somewhere around [450](budget)
+    - [1200](budget)
+    - about [700](budget) should cover it
+    - up to [5000](budget) total
+    - budget of [350](budget)
+    - let's cap it at [1800](budget)
+
+- intent: provide_sustainability
+  examples: |
+    - sustainability is very important
+    - maximum sustainability
+    - I want an eco friendly trip
+    - sustainability should be high
+    - low carbon is important
+    - I want the greenest option
+    - balanced sustainability
+    - sustainability is [high](sustainability_level)
+    - sustainability level is [maximum](sustainability_level)
+    - choose [balanced](sustainability_level)
+    - [standard](sustainability_level) is fine
+    - keep it [standard](sustainability_level)
+    - go for [maximum](sustainability_level)
+    - just [balanced](sustainability_level) please
+    - not too fussed about carbon impact
+    - lowest carbon option please
+    - as green as possible
+    - doesn't need to be especially eco-friendly
+    - somewhere in the middle on sustainability
+    - prioritise the environment on this one
+
+- intent: provide_transport_preference
+  examples: |
+    - I prefer trains
+    - I want to travel by train
+    - flight is preferred
+    - I prefer flights
+    - public transport is preferred
+    - no transport preference
+    - I want [train](transport_preference)
+    - choose [flight](transport_preference)
+    - [bus](transport_preference) works for us
+    - let's go by [car](transport_preference)
+    - we'd rather drive
+    - [train](transport_preference) please
+    - happy to fly
+    - coach is fine
+    - doesn't matter how we get there
+    - whatever is fastest
+    - prefer not to fly if possible
+    - driving suits us better
+    - [flight](transport_preference) sounds good
+    - any mode of transport is okay
+
+- intent: provide_accommodation_preference
+  examples: |
+    - eco hotel
+    - sustainable accommodation
+    - I want an eco certified hotel
+    - hotel near public transport
+    - budget hotel
+    - luxury hotel
+    - environmentally friendly accommodation
+    - [eco certified](accommodation_preference)
+    - [budget](accommodation_preference) is fine
+    - go [standard](accommodation_preference)
+    - [luxury](accommodation_preference) please
+    - nothing fancy, just [budget](accommodation_preference)
+    - I want [luxury](accommodation_preference) this time
+    - somewhere [eco-certified](accommodation_preference)
+    - keep the stay [standard](accommodation_preference)
+    - doesn't matter what kind of stay
+    - no preference on accommodation
+    - whatever's cheapest is fine
+    - something certified sustainable
+    - a nice comfortable place is fine
+
+- intent: generate_recommendations
+  examples: |
+    - find options
+    - search for options
+    - generate recommendations
+    - show recommendations
+    - find suitable flights and hotels
+    - recommend a trip
+    - search now
+    - show me the best options
+    - go ahead and search
+    - what do you recommend
+    - show me what's available
+    - let's see the results
+    - run the search
+    - give me some suggestions
+
+- intent: modify_trip
+  examples: |
+    - I want to change something
+    - modify the trip
+    - change the requirements
+    - update the trip
+    - I want different options
+    - let's adjust the plan
+    - can we tweak this
+    - something needs to change
+    - I'd like to update a detail
+    - can we revise this trip
+    - let's change a few things
+    - a couple of things need adjusting
+    - can we tweak a few details
+    - I need to update a few parts of this
+
+- intent: change_destination
+  examples: |
+    - change destination
+    - use another destination
+    - I want somewhere else
+    - change the city
+    - actually let's go somewhere different
+    - swap the destination
+    - different city please
+    - not that destination, another one
+
+- intent: change_dates
+  examples: |
+    - change the dates
+    - use different dates
+    - the travel dates changed
+    - let's pick new dates
+    - the dates need to move
+    - can we shift the travel dates
+    - different timing please
+    - can we switch away from the dates I picked
+    - I'd like to change the travel dates
+    - not the dates I chose before, something else
+
+- intent: change_budget
+  examples: |
+    - change the budget
+    - the budget is different
+    - reduce the budget
+    - increase the budget
+    - let's raise the budget
+    - lower the budget a bit
+    - budget needs an update
+    - can we switch away from the budget I set
+    - I'd like to change the budget amount
+    - not the budget I chose before, something else
+
+- intent: change_sustainability
+  examples: |
+    - change sustainability preference
+    - sustainability preference changed
+    - make it more sustainable
+    - use a lower sustainability level
+    - let's raise the sustainability priority
+    - adjust how green this needs to be
+    - can we switch away from the sustainability level I picked
+    - I'd like to change the sustainability setting
+    - let's update the sustainability choice
+    - not the green level I chose before, something else
+    - can you change my sustainability selection
+
+- intent: change_transport
+  examples: |
+    - change the transport
+    - use a different mode of transport
+    - let's not fly after all
+    - switch the transport preference
+    - actually change how we're travelling
+    - can we switch away from the transport I picked earlier
+    - I'd like to change how we're getting there
+    - let's update the transport choice
+    - not the transport I chose before, something else
+    - can you change my transport selection
+    - I need to revise the transport option
+    - the mode of transport needs revisiting
+
+- intent: change_accommodation
+  examples: |
+    - change the accommodation
+    - use a different kind of stay
+    - switch the accommodation preference
+    - actually change where they're staying
+    - different type of hotel please
+    - can we switch away from the accommodation I picked
+    - I'd like to change where we're staying
+    - let's update the accommodation choice
+    - not the stay type I chose before, something else
+    - can you change my accommodation selection
+    - I need to revise the accommodation option
+
+- intent: compare_options
+  examples: |
+    - compare these options
+    - compare flights
+    - compare hotels
+    - show me a comparison
+    - compare the recommendations
+    - which one is better
+    - lay out the differences
+    - compare price and carbon impact
+
+- intent: request_specialist
+  examples: |
+    - I need a specialist
+    - send this to a human
+    - escalate this case
+    - I need human assistance
+    - request specialist help
+    - can a real person take over
+    - this needs a colleague's input
+    - pass this case to the team
+    - get me a human advisor
+    - I'd like to speak to a person
+    - transfer this to support staff
+    - this is beyond what you can help with
+
+- intent: confirm_positive
+  examples: |
+    - yes
+    - correct
+    - that's right
+    - okay
+    - sure
+    - proceed
+    - go ahead
+    - sounds good
+    - yep
+    - definitely
+    - that works
+    - please do
+    - yes that's correct
+    - that's exactly right
+    - absolutely
+    - alright let's do that
+    - fine by me
+    - yeah go for it
+    - looks good to me
+
+- intent: confirm_negative
+  examples: |
+    - no
+    - no thanks
+    - no thank you
+    - that's wrong
+    - not correct
+    - change it
+    - not quite
+    - leave it as is
+    - nope
+    - nah
+    - definitely not
+    - don't do that
+    - not right now
+    - not needed
+    - actually no
+    - no not really
+    - that's not it
+    - that's not quite right
+
+- intent: unsupported_topic
+  examples: |
+    - can you fix my printer
+    - what's today's lottery number
+    - recommend a good recipe for dinner
+    - do my taxes for me
+    - what's the score of last night's match
+    - what's the capital of Mongolia
+    - can you diagnose this headache
+    - help me fix my car engine
+    - what stocks should I buy
+    - translate this sentence into French
+    - what's the meaning of life
+    - can you write my essay for me
+    - set a reminder for my meeting
+    - who won the election last year
+    - what's the weather like tomorrow
+    - can you play some music
+    - tell me a joke
+    - what's your favourite movie
+    - help me debug this code
+    - can you book a doctor's appointment

@@ -1,0 +1,242 @@
+version: "3.1"
+
+stories:
+
+- story: greeting then capability question
+  steps:
+  - user: |
+      morning, got a new trip to plan
+    intent: session_greeting
+  - action: utter_session_greeting
+  - user: |
+      what can this bot actually do
+    intent: capability_overview
+  - action: utter_capability_overview
+
+- story: closing a session
+  steps:
+  - user: |
+      done here, thanks
+    intent: session_closing
+  - action: utter_session_closing
+
+- story: off-topic question does not derail the bot
+  steps:
+  - user: |
+      what's the capital of Mongolia
+    intent: unsupported_topic
+  - action: action_unsupported_topic
+
+- story: direct request for a specialist is offered a handover, then confirmed
+  steps:
+  - user: |
+      send this to a human
+    intent: request_specialist
+  - action: action_offer_human_handover
+  - slot_was_set:
+    - awaiting_handover_confirm: true
+  - user: |
+      yes
+    intent: confirm_positive
+  - action: action_human_handover
+
+- story: human handover offer can be declined
+  steps:
+  - user: |
+      I need human assistance
+    intent: request_specialist
+  - action: action_offer_human_handover
+  - slot_was_set:
+    - awaiting_handover_confirm: true
+  - user: |
+      no thanks
+    intent: confirm_negative
+  - action: action_continue_after_handover_offer
+
+- story: comparing options after recommendations exist
+  steps:
+  - user: |
+      compare these options
+    intent: compare_options
+  - action: action_compare_options
+
+# --- Extended coverage: opening-answer variations trigger the consultation form.
+# Each of these uses a phrasing that is NOT a verbatim nlu.yml training example,
+# to check the model generalizes rather than just memorizing exact strings. ---
+
+- story: an opening destination answer starts the consultation (varied phrasing)
+  steps:
+  - user: |
+      take me to Reykjavik
+    intent: provide_destination
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+- story: an opening travel-dates answer starts the consultation (varied phrasing)
+  steps:
+  - user: |
+      we're flexible on when we go
+    intent: provide_travel_dates
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+- story: an opening budget answer starts the consultation (varied phrasing)
+  steps:
+  - user: |
+      budget's around 1500 dollars
+    intent: provide_budget
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+- story: an opening transport answer starts the consultation (varied phrasing)
+  steps:
+  - user: |
+      train travel works for us
+    intent: provide_transport_preference
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+- story: an opening accommodation answer starts the consultation (varied phrasing)
+  steps:
+  - user: |
+      an eco-certified hotel would be great
+    intent: provide_accommodation_preference
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+# --- Sustainability level variations: standard / balanced / high / maximum should
+# all take the same opening-answer story path regardless of which level the user
+# actually asks for, since the rule only keys off the intent, not the entity value. ---
+
+- story: opening with standard sustainability starts the consultation
+  steps:
+  - user: |
+      standard is fine
+    intent: provide_sustainability
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+- story: opening with balanced sustainability starts the consultation
+  steps:
+  - user: |
+      keep it balanced
+    intent: provide_sustainability
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+- story: opening with high sustainability starts the consultation
+  steps:
+  - user: |
+      sustainability level is high
+    intent: provide_sustainability
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+- story: opening with maximum sustainability starts the consultation
+  steps:
+  - user: |
+      maximum sustainability please
+    intent: provide_sustainability
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+
+# --- Full happy path: intake -> recap -> confirm -> live search chain ---
+
+- story: full consultation flow through to ranked recommendations
+  steps:
+  - user: |
+      start a new trip
+    intent: start_consultation
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+  - active_loop: null
+  - action: action_recap_trip_details
+  - slot_was_set:
+    - awaiting_recap_confirm: true
+  - user: |
+      yes
+    intent: confirm_positive
+  - action: action_confirm_recap
+  - action: action_get_transportation_options
+  - action: action_get_accommodation_options
+  - action: action_get_activity_options
+  - action: action_calculate_carbon_emissions
+  - action: action_rank_recommendations
+
+- story: declining the recap goes into modify_trip, then changes sustainability
+  steps:
+  - user: |
+      the trip is to Brussels
+    intent: provide_destination
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+  - active_loop: null
+  - action: action_recap_trip_details
+  - slot_was_set:
+    - awaiting_recap_confirm: true
+  - user: |
+      no thanks
+    intent: confirm_negative
+  - action: action_modify_trip
+  - user: |
+      change sustainability preference
+    intent: change_sustainability
+  - action: action_reset_field_and_reenter_form
+
+# --- Mixed-order slot filling: the consultation is opened via one slot
+# (accommodation) and then modified on a completely different field (transport). ---
+
+- story: modify trip changes transport after an accommodation-first opening
+  steps:
+  - user: |
+      eco hotel
+    intent: provide_accommodation_preference
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+  - active_loop: null
+  - action: action_recap_trip_details
+  - slot_was_set:
+    - awaiting_recap_confirm: true
+  - user: |
+      no thanks
+    intent: confirm_negative
+  - action: action_modify_trip
+  - user: |
+      change the transport
+    intent: change_transport
+  - action: action_reset_field_and_reenter_form
+
+# --- Adversarial / edge case: unparseable input correctly hits fallback,
+# both outside and inside the intake form. ---
+
+- story: gibberish input hits the NLU fallback outside the form
+  steps:
+  - user: |
+      asdkjf qwerty blorptastic
+    intent: nlu_fallback
+  - action: action_default_fallback
+
+- story: gibberish input mid-intake is absorbed back into the form instead of derailing it
+  steps:
+  - user: |
+      I want to visit Paris
+    intent: provide_destination
+  - action: action_start_consultation
+  - action: consultation_form
+  - active_loop: consultation_form
+  - user: |
+      xyzzy plugh wibble
+    intent: nlu_fallback
+  - action: consultation_form

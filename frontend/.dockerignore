@@ -1,0 +1,4 @@
+# Applies to frontend/Dockerfile's build context (./frontend).
+node_modules/
+dist/
+.git/

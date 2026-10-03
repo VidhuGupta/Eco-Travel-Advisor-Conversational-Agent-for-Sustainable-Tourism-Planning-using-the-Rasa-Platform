@@ -1,0 +1,272 @@
+version: "3.1"
+
+rules:
+
+- rule: Respond to greeting
+  steps:
+    - intent: session_greeting
+    - action: utter_session_greeting
+
+- rule: Respond to help
+  steps:
+    - intent: capability_overview
+    - action: utter_capability_overview
+
+- rule: Respond to goodbye
+  steps:
+    - intent: session_closing
+    - action: utter_session_closing
+
+- rule: Start consultation
+  condition:
+    - active_loop: null
+  steps:
+    - intent: start_consultation
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: A stray start-consultation mid-intake just continues the form
+  condition:
+    - active_loop: consultation_form
+  steps:
+    - intent: start_consultation
+    - action: consultation_form
+
+- rule: An opening answer starts a consultation too (destination)
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+  steps:
+    - intent: provide_destination
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: An opening answer starts a consultation too (select_destination)
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+  steps:
+    - intent: select_destination
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: An opening answer starts a consultation too (dates)
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+  steps:
+    - intent: provide_travel_dates
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: An opening answer starts a consultation too (budget)
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+  steps:
+    - intent: provide_budget
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: An opening answer starts a consultation too (sustainability)
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+  steps:
+    - intent: provide_sustainability
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: An opening answer starts a consultation too (transport)
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+  steps:
+    - intent: provide_transport_preference
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: An opening answer starts a consultation too (accommodation)
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+  steps:
+    - intent: provide_accommodation_preference
+    - action: action_start_consultation
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: Submit consultation form and recap before searching
+  condition:
+    - active_loop: consultation_form
+  steps:
+    - action: consultation_form
+    - active_loop: null
+    - action: action_recap_trip_details
+
+- rule: Confirm the recap and run the live search
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: true
+  steps:
+    - intent: confirm_positive
+    - action: action_confirm_recap
+    - action: action_get_transportation_options
+    - action: action_get_accommodation_options
+    - action: action_get_activity_options
+    - action: action_calculate_carbon_emissions
+    - action: action_rank_recommendations
+    - slot_was_set:
+        - awaiting_recap_confirm: false
+
+- rule: Decline the recap and go into modify_trip
+  condition:
+    - active_loop: null
+    - slot_was_set:
+        - awaiting_recap_confirm: true
+  steps:
+    - intent: confirm_negative
+    - action: action_modify_trip
+
+- rule: Generate recommendations
+  condition:
+    - active_loop: null
+  steps:
+    - intent: generate_recommendations
+    - action: consultation_form
+    - active_loop: consultation_form
+
+- rule: A stray generate-recommendations mid-intake just continues the form
+  condition:
+    - active_loop: consultation_form
+  steps:
+    - intent: generate_recommendations
+    - action: consultation_form
+
+- rule: Compare options
+  condition:
+    - active_loop: null
+  steps:
+    - intent: compare_options
+    - action: action_compare_options
+
+- rule: A stray compare-options mid-intake just continues the form
+  condition:
+    - active_loop: consultation_form
+  steps:
+    - intent: compare_options
+    - action: consultation_form
+
+- rule: Modify trip - ask which field
+  condition:
+    - active_loop: null
+  steps:
+    - intent: modify_trip
+    - action: action_modify_trip
+
+- rule: Change destination
+  steps:
+    - intent: change_destination
+    - action: action_reset_field_and_reenter_form
+
+- rule: Change dates
+  steps:
+    - intent: change_dates
+    - action: action_reset_field_and_reenter_form
+
+- rule: Change budget
+  steps:
+    - intent: change_budget
+    - action: action_reset_field_and_reenter_form
+
+- rule: Change sustainability
+  steps:
+    - intent: change_sustainability
+    - action: action_reset_field_and_reenter_form
+
+- rule: Change transport
+  steps:
+    - intent: change_transport
+    - action: action_reset_field_and_reenter_form
+
+- rule: Change accommodation
+  steps:
+    - intent: change_accommodation
+    - action: action_reset_field_and_reenter_form
+
+- rule: Human specialist handover
+  steps:
+    - intent: request_specialist
+    - action: action_offer_human_handover
+
+- rule: Low-confidence NLU fallback
+  condition:
+    - active_loop: null
+  steps:
+    - intent: nlu_fallback
+    - action: action_default_fallback
+
+- rule: Low-confidence input mid-intake just continues the form
+  condition:
+    - active_loop: consultation_form
+  steps:
+    - intent: nlu_fallback
+    - action: consultation_form
+
+- rule: Out of scope
+  steps:
+    - intent: unsupported_topic
+    - action: action_unsupported_topic
+
+- rule: Accept the human handover offer
+  condition:
+    - slot_was_set:
+        - awaiting_handover_confirm: true
+  steps:
+    - intent: confirm_positive
+    - action: action_human_handover
+    - slot_was_set:
+        - awaiting_handover_confirm: false
+
+- rule: Decline the human handover offer
+  condition:
+    - slot_was_set:
+        - awaiting_handover_confirm: true
+  steps:
+    - intent: confirm_negative
+    - action: action_continue_after_handover_offer
+    - slot_was_set:
+        - awaiting_handover_confirm: false
+
+- rule: A stray yes/no while intake is running just continues the form (yes)
+  condition:
+    - active_loop: consultation_form
+    - slot_was_set:
+        - awaiting_handover_confirm: false
+  steps:
+    - intent: confirm_positive
+    - action: consultation_form
+
+- rule: A stray yes/no while intake is running just continues the form (no)
+  condition:
+    - active_loop: consultation_form
+    - slot_was_set:
+        - awaiting_handover_confirm: false
+  steps:
+    - intent: confirm_negative
+    - action: consultation_form

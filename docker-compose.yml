@@ -1,0 +1,83 @@
+services:
+  rasa:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: rasa
+    ports:
+      - "5005:5005"
+    volumes:
+      # Mount the already-trained local model instead of the one baked into
+      # the image at build time (see Dockerfile's "trainer" stage and
+      # docs/DEPLOYMENT.md, "Why bake the model in vs. mount it") - this makes
+      # `docker compose up` pick up a freshly `rasa train`-ed model without
+      # a rebuild, which is what you want while iterating locally.
+      - ./models:/app/models:ro
+      # Shared runtime-data directory (conversation.db, admin's handover
+      # sidecar JSON) - also mounted by the admin service so both see the
+      # same conversations. Mounted as a DIRECTORY, not individual files:
+      # Docker's bind-mount of a not-yet-existing single FILE path can
+      # silently create a directory there instead on some Docker versions,
+      # which breaks SQLite outright - a directory mount has no such
+      # ambiguity and works whether or not db/ has been populated yet by a
+      # local `rasa train`/`rasa run` before the first `docker compose up`.
+      - ./db:/app/db
+    depends_on:
+      - actions
+    restart: unless-stopped
+
+  actions:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: actions
+    ports:
+      - "5055:5055"
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    ports:
+      - "8060:8060"
+    env_file:
+      - .env
+    environment:
+      # admin_server.py defaults to binding 127.0.0.1 (correct for running
+      # it directly on your own machine) which is unreachable from outside
+      # its container - 0.0.0.0 is required for Docker's port publishing
+      # and for other containers to reach it by service name.
+      ADMIN_HOST: 0.0.0.0
+      RASA_API_URL: http://rasa:5005
+      RASA_TRACKER_DB: /app/db/conversation.db
+      # Origin the browser-facing frontend container is published on (see
+      # the frontend service's ports below) - admin_server.py's CORS/origin
+      # checks reject anything not in this list.
+      ADMIN_ALLOWED_ORIGINS: http://localhost:8080
+    volumes:
+      - ./db:/app/db
+    depends_on:
+      - rasa
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      # Left unset (default local-dev fallbacks): with rasa/admin published
+      # to the host under their usual ports (below), the frontend's
+      # built-in "http://localhost:5005" / "http://<hostname>:8060"
+      # defaults resolve correctly with no build args needed.
+      # args:
+      #   VITE_RASA_WEBHOOK_URL: http://localhost:5005/webhooks/rest/webhook
+      #   VITE_RASA_API_URL: http://localhost:5005
+      #   VITE_ADMIN_API_URL: http://localhost:8060/api/admin
+    ports:
+      - "8080:80"
+    depends_on:
+      - rasa
+      - admin
+    restart: unless-stopped

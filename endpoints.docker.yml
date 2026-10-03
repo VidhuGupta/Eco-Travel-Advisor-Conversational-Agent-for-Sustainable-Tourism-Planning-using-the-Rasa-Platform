@@ -1,0 +1,22 @@
+# Docker/container variant of endpoints.yml.
+#
+# endpoints.yml (unmodified, used for local `rasa run` outside Docker) points
+# the action server and SQLite tracker store at localhost paths, which only
+# work when every process shares one machine's loopback interface. Inside
+# Docker Compose each process is a separate container on its own network
+# namespace, so the action server must be addressed by its Compose service
+# name ("actions") instead of "localhost", and the tracker DB is pointed at
+# a path backed by a bind mount so admin_server.py (running in a different
+# container) can read/write the same db/conversation.db file.
+#
+# Selected explicitly via `rasa run --endpoints endpoints.docker.yml` in the
+# rasa service's container command (see docker-compose.yml) - endpoints.yml
+# itself is untouched.
+
+action_endpoint:
+  url: "http://actions:5055/webhook"
+
+tracker_store:
+  type: SQL
+  dialect: sqlite
+  db: /app/db/conversation.db

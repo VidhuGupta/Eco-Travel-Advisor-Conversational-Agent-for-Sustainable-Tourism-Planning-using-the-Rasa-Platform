@@ -1,0 +1,23 @@
+# admin_server.py is stdlib-only (http.server.ThreadingHTTPServer) aside
+# from an optional python-dotenv import it already falls back gracefully
+# without (see its own try/except ImportError), so this image stays tiny:
+# no Flask/FastAPI, no Rasa, no tensorflow.
+FROM python:3.10-slim
+WORKDIR /app
+
+# python-dotenv is optional (admin_server.py has a stdlib fallback loader),
+# included here purely so .env parsing matches the same library used
+# locally; it adds negligible size.
+RUN pip install --no-cache-dir python-dotenv==1.2.3
+
+COPY admin_server.py .
+
+# Bind/port are configurable (see admin_server.py's ADMIN_HOST/ADMIN_PORT);
+# docker-compose sets ADMIN_HOST=0.0.0.0 so the process is reachable from
+# other containers and from published host ports - binding to 127.0.0.1
+# (the script's local-dev default) would make it unreachable from outside
+# its own container.
+EXPOSE 8060
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=5 \
+    CMD python -c "import urllib.request,os; urllib.request.urlopen('http://127.0.0.1:' + os.environ.get('ADMIN_PORT','8060') + '/api/admin/session')" || exit 1
+CMD ["python", "admin_server.py"]

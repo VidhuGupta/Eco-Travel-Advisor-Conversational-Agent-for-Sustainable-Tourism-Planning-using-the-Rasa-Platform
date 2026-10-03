@@ -1,0 +1,34 @@
+# Applies to the root build context (Dockerfile, Dockerfile.admin).
+# Keeps the build context small and secrets out of any image layer.
+
+.git/
+.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.rasa/
+
+# Frontend is built by its own Dockerfile with its own context
+# (frontend/Dockerfile, context: ./frontend) - never needed here.
+frontend/node_modules/
+frontend/dist/
+
+# Trained model: baked in at build time by `rasa train` in the Dockerfile's
+# "trainer" stage, or bind-mounted at runtime by docker-compose - either
+# way the large pre-existing tarballs in ./models don't need to enter the
+# build context (and would otherwise bloat every build's upload).
+models/
+
+# Runtime state / secrets - must never end up inside an image layer.
+# db/ is bind-mounted at runtime (see docker-compose.yml), never baked in.
+.env
+.env.*
+!.env.example
+db/
+
+# Misc project/editor files not needed for any image.
+*.md
+!docs/DEPLOYMENT.md
+tests/
+.git
+.gitignore
